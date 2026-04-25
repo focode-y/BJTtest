@@ -61,7 +61,7 @@
     z-index: 1;
     max-width: 960px;
     margin: 0 auto;
-    padding: 48px 32px 80px;
+    padding: 28px 32px 80px;
   }
 
   /* ── Header ─────────────────────────────── */
@@ -71,7 +71,7 @@
     align-items: center;
     padding-bottom: 28px;
     border-bottom: 1px solid var(--line);
-    margin-bottom: 56px;
+    margin-bottom: 24px;
   }
   .logo-block {
     display: flex;
@@ -109,11 +109,11 @@
   /* ── Hero ────────────────────────────────── */
   .hero {
     position: relative;
-    margin-bottom: 56px;
+    margin-bottom: 20px;
   }
   .hero-kanji {
     font-family: 'Shippori Mincho B1', serif;
-    font-size: clamp(36px, 7.5vw, 88px);
+    font-size: clamp(28px, 5vw, 56px);
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: -0.03em;
@@ -129,10 +129,10 @@
   .hero-kanji .accent::after {
     content: '';
     position: absolute;
-    right: -14px;
-    top: 14px;
-    width: 10px;
-    height: 10px;
+    right: -10px;
+    top: 8px;
+    width: 8px;
+    height: 8px;
     background: var(--vermilion);
     border-radius: 50%;
   }
@@ -140,7 +140,7 @@
     font-family: 'Shippori Mincho B1', serif;
     font-size: 18px;
     color: var(--ink-soft);
-    margin-top: 20px;
+    margin-top: 10px;
     letter-spacing: 0.08em;
   }
   .hero-sub::before {
@@ -246,7 +246,7 @@
 
   /* ── CTA ─────────────────────────────────── */
   .cta-wrap {
-    margin: 64px 0 48px;
+    margin: 24px 0 48px;
     text-align: center;
   }
   .cta {
@@ -414,6 +414,15 @@
 
 
 
+  <div class="cta-wrap fade-in">
+    <a href="exam.html" class="cta">試験開始 / START</a>
+    <span class="cta-hint">※ ブラウザの音声読み上げを使用するため、音量をご確認ください</span>
+    <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="study.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 14px 32px; font-size: 14px;">学習モード(中日対訳) →</a>
+      <a href="review.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 14px 32px; font-size: 14px;">錯題本 →</a>
+    </div>
+  </div>
+
   <section class="parts fade-in">
     <div class="section-heading">
       <span class="section-heading-num">01 / 03</span>
@@ -449,15 +458,6 @@
       <div class="part-stat"><span class="part-stat-num">30</span> 分</div>
     </div>
   </section>
-
-  <div class="cta-wrap fade-in">
-    <a href="exam.html" class="cta">試験開始 / START</a>
-    <span class="cta-hint">※ ブラウザの音声読み上げを使用するため、音量をご確認ください</span>
-    <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-      <a href="study.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 14px 32px; font-size: 14px;">学習モード(中日対訳) →</a>
-      <a href="review.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 14px 32px; font-size: 14px;">錯題本 →</a>
-    </div>
-  </div>
 
   <section class="history fade-in">
     <div class="section-heading">
