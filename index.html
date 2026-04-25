@@ -155,6 +155,43 @@
     color: var(--vermilion);
   }
 
+  /* ── Exam tabs ──────────────────────────── */
+  .exam-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+    border: 1px solid var(--line);
+  }
+  .exam-tab {
+    flex: 1;
+    padding: 10px 16px;
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    background: var(--paper-dark);
+    color: var(--ink-soft);
+    border: none;
+    border-right: 1px solid var(--line);
+    transition: all 0.2s;
+    letter-spacing: 0.08em;
+  }
+  .exam-tab:last-child { border-right: none; }
+  .exam-tab:hover { background: var(--paper); }
+  .exam-tab.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .exam-tab .tab-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    display: block;
+    margin-bottom: 2px;
+    letter-spacing: 0.15em;
+  }
+
   /* ── Part breakdown ──────────────────────── */
   .parts {
     margin-bottom: 12px;
@@ -383,7 +420,7 @@
       <span class="logo-mark">BJT</span>
       <span class="logo-sub">模擬試験・MOCK</span>
     </div>
-    <a href="review.html" class="nav-link">錯題本 →</a>
+    <a id="nav-review" href="review.html" class="nav-link">錯題本 →</a>
   </header>
 
   <section class="hero fade-in">
@@ -394,15 +431,17 @@
     <p class="hero-sub">80問・105分・ビジネス日本語</p>
   </section>
 
-
+  <div class="exam-tabs fade-in" id="exam-tabs">
+    <button class="exam-tab active" data-exam="1"><span class="tab-num">#01</span>第1回</button>
+    <button class="exam-tab" data-exam="2"><span class="tab-num">#02</span>第2回</button>
+  </div>
 
   <div class="cta-wrap fade-in">
-    <a href="exam.html" class="cta">試験開始 / START</a>
+    <a id="cta-start" href="exam.html" class="cta">試験開始 / START</a>
     <span class="cta-hint">※ ブラウザの音声読み上げを使用するため、音量をご確認ください</span>
     <div style="margin-top: 12px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-      <a href="study.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 10px 24px; font-size: 13px;">学習モード(中日対訳) →</a>
-      <a href="review.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 10px 24px; font-size: 13px;">錯題本 →</a>
-      <a href="第二套卷子/index.html" class="cta" style="background: var(--vermilion); color: white; border: 1px solid var(--vermilion); padding: 10px 24px; font-size: 13px;">第2回 模擬試験 →</a>
+      <a id="cta-study" href="study.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 10px 24px; font-size: 13px;">学習モード(中日対訳) →</a>
+      <a id="cta-review" href="review.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 10px 24px; font-size: 13px;">錯題本 →</a>
     </div>
   </div>
 
@@ -455,12 +494,37 @@
 </div>
 
 <script>
-  // 加载历史成绩 (本地版,从 localStorage 读)
+  // ── 考试配置 (新增考试只需在此添加一行) ──
+  const EXAMS = [
+    { id: 1, label: '第1回', base: '',            storageKey: 'bjt_exam_records_v1' },
+    { id: 2, label: '第2回', base: '第二套卷子/', storageKey: 'bjt_exam_records_v2' },
+  ];
+  let currentExam = EXAMS[0];
+
+  // ── Tab 切换 ──
+  document.getElementById('exam-tabs').addEventListener('click', (e) => {
+    const tab = e.target.closest('.exam-tab');
+    if (!tab) return;
+    const examId = Number(tab.dataset.exam);
+    currentExam = EXAMS.find(ex => ex.id === examId) || EXAMS[0];
+    document.querySelectorAll('.exam-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    // 更新链接
+    document.getElementById('cta-start').href   = currentExam.base + 'exam.html';
+    document.getElementById('cta-study').href   = currentExam.base + 'study.html';
+    document.getElementById('cta-review').href  = currentExam.base + 'review.html';
+    document.getElementById('nav-review').href  = currentExam.base + 'review.html';
+    // 重新加载历史
+    loadHistory();
+  });
+
+  // ── 加载历史成绩 ──
   function loadHistory() {
     const container = document.getElementById('history-container');
     try {
-      const data = window.bjtApiReview({});
-      const hist = data.history || [];
+      const raw = localStorage.getItem(currentExam.storageKey);
+      const records = raw ? JSON.parse(raw) : { results: [] };
+      const hist = (records.results || []).slice().reverse();
 
       if (hist.length === 0) {
         container.innerHTML = '<div class="history-empty">まだ受験記録がありません。初回挑戦、頑張って！</div>';
@@ -504,7 +568,7 @@
             <td>${h.score_part1}·${h.score_part2}·${h.score_part3}</td>
             <td>${formatDuration(h.duration_seconds)}</td>
             <td><span class="level-pill ${lvClass}">${lv}</span></td>
-            <td><a href="review.html?result_id=${h.id}" style="color:var(--vermilion);text-decoration:none;">→</a></td>
+            <td><a href="${currentExam.base}review.html?result_id=${h.id}" style="color:var(--vermilion);text-decoration:none;">→</a></td>
           </tr>
         `;
       }).join('');
