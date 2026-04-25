@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ja" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="robots" content="notranslate">
+<meta http-equiv="Content-Language" content="ja">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学習モード(中日対訳) ― BJT 模擬試験</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="questions-data.js"></script>
+<script src="bjt-local-api.js"></script>
+<script src="bjt-common.js"></script>
+<script src="translations.js"></script>
+<style>
+  :root {
+    --paper: #F5F1E8; --paper-dark: #EBE4D2;
+    --ink: #1A1A2E; --ink-soft: #3D3D52;
+    --vermilion: #C13B3B; --slate: #2E4057;
+    --gold: #A08752; --green: #5a7c3f;
+    --line: rgba(26,26,46,0.12);
+    --bg-zh: #FFF7F0;  /* 中文部分稍亮一点的纸色 */
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif; min-height: 100vh; line-height: 1.7;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.18 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.4; mix-blend-mode: multiply;
+  }
+  .container { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 36px 24px 80px; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 32px;
+  }
+  .logo-mark {
+    font-family: 'Shippori Mincho B1', serif; font-size: 24px;
+    font-weight: 800; color: var(--vermilion); text-decoration: none;
+  }
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .nav-link, .filter-btn {
+    font-size: 12px; color: var(--ink-soft); text-decoration: none;
+    letter-spacing: 0.1em; padding: 7px 14px; border: 1px solid var(--line);
+    background: var(--paper); cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .nav-link:hover, .filter-btn:hover { background: var(--ink); color: var(--paper); }
+  .filter-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .page-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 38px; font-weight: 800; margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .page-title .accent { color: var(--vermilion); }
+  .page-sub {
+    font-size: 13px; color: var(--ink-soft);
+    letter-spacing: 0.08em; margin-bottom: 24px;
+  }
+
+  .stats-row {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    margin-bottom: 28px; padding: 14px 18px;
+    background: var(--ink); color: var(--paper);
+    font-size: 12px; letter-spacing: 0.08em;
+  }
+  .stats-row strong {
+    font-family: 'Shippori Mincho B1', serif; font-size: 20px;
+    color: var(--vermilion); margin-right: 4px;
+  }
+
+  /* TOC for jumping */
+  .toc {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--line);
+  }
+  .toc-label {
+    font-size: 11px; color: var(--ink-soft);
+    letter-spacing: 0.15em; margin-right: 8px;
+    align-self: center;
+  }
+  .toc-link {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 12px; padding: 4px 10px;
+    background: var(--paper-dark); border: 1px solid transparent;
+    color: var(--ink); text-decoration: none;
+    transition: all 0.15s;
+  }
+  .toc-link:hover { border-color: var(--ink); }
+
+  /* Part heading */
+  .part-heading {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 26px; font-weight: 800;
+    margin: 36px 0 18px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--ink);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .part-heading-en {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em;
+    color: var(--ink-soft); font-weight: 400;
+  }
+
+  /* Question card */
+  .q-card {
+    background: white;
+    margin-bottom: 18px;
+    padding: 22px 26px;
+    border-left: 3px solid var(--line);
+    box-shadow: 1px 1px 0 var(--line);
+    transition: border-color 0.2s;
+  }
+  .q-card.was-wrong { border-left-color: var(--vermilion); }
+  .q-card.was-wrong::before {
+    content: '錯';
+    display: inline-block;
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 11px; padding: 2px 8px;
+    background: var(--vermilion); color: white;
+    margin-right: 8px; vertical-align: middle;
+    letter-spacing: 0.1em;
+  }
+
+  .q-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+  }
+  .q-id {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 14px; color: var(--ink-soft);
+    letter-spacing: 0.08em;
+  }
+  .q-id strong {
+    font-size: 18px; color: var(--ink);
+    font-weight: 800; margin-right: 4px;
+  }
+  .q-type {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 11px; padding: 3px 10px;
+    background: var(--vermilion); color: white;
+    letter-spacing: 0.12em;
+  }
+
+  /* Audio script (听力脚本) */
+  .audio-block {
+    background: #f0ece0;
+    border-left: 2px solid var(--slate);
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .audio-block-label {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 11px; color: var(--ink-soft);
+    letter-spacing: 0.15em; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .audio-play-btn {
+    background: var(--vermilion); color: white; border: none;
+    padding: 2px 8px; cursor: pointer; font-size: 10px;
+    font-family: inherit; letter-spacing: 0.1em;
+  }
+  .audio-play-btn:hover { background: var(--vermilion-dark); }
+  .audio-jp { font-family: 'Noto Sans JP', sans-serif; line-height: 1.8; }
+  .audio-zh {
+    font-family: 'Noto Serif SC', serif;
+    color: var(--ink-soft); margin-top: 6px;
+    padding-top: 6px; border-top: 1px dashed var(--line);
+    line-height: 1.7;
+  }
+
+  /* Image */
+  .q-image {
+    text-align: center; margin: 12px 0;
+  }
+  .q-image img {
+    max-width: 280px; max-height: 200px;
+    border: 1px solid var(--line);
+  }
+
+  /* Passage (read-aloud article) */
+  .passage-block {
+    background: #f8f4e8;
+    padding: 16px 20px;
+    margin: 12px 0;
+    border-left: 3px solid var(--gold);
+    font-size: 14px;
+  }
+  .passage-jp { font-family: 'Noto Sans JP', sans-serif; line-height: 1.85; white-space: pre-wrap; }
+  .passage-zh {
+    font-family: 'Noto Serif SC', serif;
+    color: var(--ink-soft); margin-top: 12px;
+    padding-top: 12px; border-top: 1px dashed var(--line);
+    line-height: 1.8; white-space: pre-wrap;
+  }
+
+  /* Chart */
+  .chart-block {
+    background: white; border: 1px solid var(--line);
+    padding: 14px; margin: 12px 0;
+  }
+  .chart-block-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 13px; font-weight: 600;
+    margin-bottom: 10px; text-align: center;
+  }
+  .chart-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+  }
+  .chart-table th, .chart-table td {
+    border: 1px solid var(--line); padding: 5px 8px; text-align: left;
+  }
+  .chart-table th { background: var(--paper-dark); font-weight: 600; }
+  .chart-bars {
+    display: flex; align-items: flex-end; gap: 8px;
+    height: 100px; padding: 0 4px;
+  }
+  .chart-bars .bar {
+    flex: 1; background: var(--slate); position: relative;
+    min-width: 24px; display: flex; flex-direction: column;
+    justify-content: flex-end; align-items: center;
+    padding-bottom: 2px;
+  }
+  .chart-bars .bar span { font-size: 9px; color: white; }
+  .chart-bars .bar small {
+    position: absolute; bottom: -16px; font-size: 10px;
+    color: var(--ink-soft); white-space: nowrap;
+  }
+  .chart-list {
+    list-style: none; padding-left: 0;
+  }
+  .chart-list li {
+    padding: 4px 0; border-bottom: 1px dashed var(--line);
+    font-size: 13px;
+  }
+
+  /* Question text */
+  .q-text-row { margin: 14px 0 6px; }
+  .q-text-jp {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 16px; font-weight: 600;
+  }
+  .q-text-zh {
+    font-family: 'Noto Serif SC', serif;
+    color: var(--ink-soft); font-size: 14px;
+    margin-top: 2px;
+  }
+
+  /* Options */
+  .options-list { margin: 8px 0; }
+  .opt-row {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .opt-row:last-child { border-bottom: none; }
+  .opt-row.correct { background: rgba(90, 124, 63, 0.06); margin: 0 -10px; padding: 8px 10px; }
+  .opt-letter {
+    font-family: 'Shippori Mincho B1', serif;
+    font-weight: 700; font-size: 14px;
+    color: var(--vermilion); text-align: center;
+  }
+  .opt-row.correct .opt-letter { color: var(--green); }
+  .opt-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+  .opt-zh {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px; color: var(--ink-soft);
+    margin-top: 2px; line-height: 1.5;
+  }
+  .opt-correct-mark {
+    display: inline-block;
+    font-size: 10px; padding: 1px 6px;
+    background: var(--green); color: white;
+    margin-left: 6px; letter-spacing: 0.1em;
+    vertical-align: middle;
+  }
+
+  /* Explanation */
+  .explanation {
+    background: var(--paper-dark);
+    padding: 12px 16px; margin-top: 12px;
+    border: 1px dashed var(--ink-soft);
+    font-size: 13px; line-height: 1.75;
+  }
+  .explanation-label {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 11px; letter-spacing: 0.18em;
+    color: var(--vermilion); margin-bottom: 4px;
+  }
+
+  /* Translation toggle */
+  .q-card.hide-zh .audio-zh,
+  .q-card.hide-zh .passage-zh,
+  .q-card.hide-zh .q-text-zh,
+  .q-card.hide-zh .opt-zh { display: none; }
+
+  .toggle-btn {
+    background: none; border: none;
+    color: var(--ink-soft); cursor: pointer;
+    font-family: inherit; font-size: 11px;
+    text-decoration: underline;
+    margin-left: auto;
+  }
+  .toggle-btn:hover { color: var(--vermilion); }
+
+  /* Loading */
+  .loading {
+    min-height: 50vh;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Shippori Mincho B1', serif;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 24px 14px 60px; }
+    .page-title { font-size: 28px; }
+    .q-card { padding: 16px 18px; }
+    .q-text-jp { font-size: 14px; }
+    .opt-jp { font-size: 13px; }
+    .opt-zh { font-size: 12px; }
+    .stats-row { gap: 12px; }
+  }
+  @media (max-width: 400px) {
+    .page-title { font-size: 22px; }
+    .q-text-jp { font-size: 13px; }
+    .audio-block { font-size: 12px; }
+  }
+</style>
+</head>
+<body class="notranslate" translate="no">
+
+<div class="container">
+  <header>
+    <a href="index.html" class="logo-mark">BJT</a>
+    <div class="header-actions">
+      <a href="exam.html" class="nav-link">試験へ</a>
+      <a href="review.html" class="nav-link">錯題本</a>
+      <a href="index.html" class="nav-link">TOPへ</a>
+    </div>
+  </header>
+
+  <h1 class="page-title">学習モード <span class="accent">中日対訳</span></h1>
+  <p class="page-sub">不计时·所有题目+解析+听力脚本+阅读全部中日对照</p>
+
+  <div id="content">
+    <div class="loading">読み込み中…</div>
+  </div>
+</div>
+
+<script>
+const PART_NAMES = BJT_COMMON.PART_NAMES;
+const PART_KANJI = BJT_COMMON.PART_KANJI;
+const PART_NAMES_ZH = BJT_COMMON.PART_NAMES_ZH;
+const TYPE_LABELS = BJT_COMMON.TYPE_LABELS;
+
+const STATE = {
+  wrongQids: new Set(),
+  filterMode: 'all', // 'all' | 'wrong' | partN
+};
+
+function getWrongQids() {
+  // 从localStorage的考试记录里收集"曾经做错过"的题目ID
+  try {
+    const raw = localStorage.getItem('bjt_exam_records_v1');
+    if (!raw) return new Set();
+    const records = JSON.parse(raw);
+    const wrong = new Set();
+    Object.values(records.wrongs || {}).forEach(arr => {
+      arr.forEach(w => wrong.add(w.question_id));
+    });
+    return wrong;
+  } catch { return new Set(); }
+}
+
+const escapeHtml = BJT_COMMON.escapeHtml;
+const escapeAttr = BJT_COMMON.escapeAttr;
+const tr = BJT_COMMON.tr;
+const speakJP = BJT_COMMON.speakJP;
+const renderChart = BJT_COMMON.renderChart;
+
+function trPassage(qid) {
+  return tr(qid, 'passage_text');
+}
+
+function renderQuestion(q) {
+  const wasWrong = STATE.wrongQids.has(q.id);
+  const correctIdx = q.correct_answer;
+  let html = `<div class="q-card${wasWrong ? ' was-wrong' : ''}" id="q-${q.id}">`;
+
+  html += `<div class="q-head">
+    <span class="q-id"><strong>第${q.id}問</strong> Q${q.id}</span>
+    <span class="q-type">${TYPE_LABELS[q.type] || q.type}</span>
+  </div>`;
+
+  // Image
+  if (q.image_id) {
+    const imgSrc = (window.BJT_DATA.images && window.BJT_DATA.images[q.image_id])
+      || ('images/' + q.image_id + '.jpg');
+    html += `<div class="q-image"><img src="${imgSrc}" alt="" onerror="this.parentNode.style.display='none'"></div>`;
+  }
+
+  // Audio script (with translation)
+  if (q.audio_script) {
+    const zh = tr(q.id, 'audio_script');
+    html += `<div class="audio-block">
+      <div class="audio-block-label">
+        <span>📢 音声台本 / 听力脚本</span>
+        <button class="audio-play-btn" data-text="${escapeAttr(q.audio_script)}">▶ 朗読</button>
+      </div>
+      <div class="audio-jp">${escapeHtml(q.audio_script)}</div>
+      ${zh ? `<div class="audio-zh">${escapeHtml(zh)}</div>` : ''}
+    </div>`;
+  }
+
+  // Passage (long article for reading questions)
+  if (q.passage_text) {
+    const zh = trPassage(q.id);
+    html += `<div class="passage-block">
+      <div class="passage-jp">${escapeHtml(q.passage_text)}</div>
+      ${zh ? `<div class="passage-zh">${escapeHtml(zh)}</div>` : ''}
+    </div>`;
+  }
+
+  // Chart
+  if (q.chart_data) {
+    html += renderChart(q.chart_data);
+  }
+
+  // Question text
+  if (q.question_text) {
+    const zh = tr(q.id, 'question_text');
+    html += `<div class="q-text-row">
+      <div class="q-text-jp">${escapeHtml(q.question_text)}</div>
+      ${zh ? `<div class="q-text-zh">${escapeHtml(zh)}</div>` : ''}
+    </div>`;
+  }
+
+  // Options
+  html += '<div class="options-list">';
+  ['option_1', 'option_2', 'option_3', 'option_4'].forEach((key, i) => {
+    const num = i + 1;
+    const isCorrect = (num === correctIdx);
+    const optZh = tr(q.id, key);
+    html += `<div class="opt-row${isCorrect ? ' correct' : ''}">
+      <div class="opt-letter">${'①②③④'[i]}</div>
+      <div>
+        <div class="opt-jp">${escapeHtml(q[key])}${isCorrect ? '<span class="opt-correct-mark">正解</span>' : ''}</div>
+        ${optZh ? `<div class="opt-zh">${escapeHtml(optZh)}</div>` : ''}
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Explanation (already in Chinese)
+  if (q.explanation_cn) {
+    html += `<div class="explanation">
+      <div class="explanation-label">解説 / 解析</div>
+      <div>${escapeHtml(q.explanation_cn)}</div>
+    </div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function render() {
+  const container = document.getElementById('content');
+  const data = window.BJT_DATA;
+  if (!data) {
+    container.innerHTML = '<div class="loading">数据加载失败 — 请检查 questions-data.js 是否存在</div>';
+    return;
+  }
+
+  const allQs = [...data.questions.part1, ...data.questions.part2, ...data.questions.part3];
+  STATE.wrongQids = getWrongQids();
+  const wrongCount = STATE.wrongQids.size;
+
+  // Filter
+  let filtered = allQs;
+  if (STATE.filterMode === 'wrong') {
+    filtered = allQs.filter(q => STATE.wrongQids.has(q.id));
+  } else if (typeof STATE.filterMode === 'number') {
+    filtered = allQs.filter(q => q.part === STATE.filterMode);
+  }
+
+  // Translation availability check
+  const trAvailable = window.BJT_TRANSLATIONS ? Object.keys(window.BJT_TRANSLATIONS).length : 0;
+
+  let html = '';
+
+  // Stats row
+  html += `<div class="stats-row">
+    <span><strong>${allQs.length}</strong>题总数</span>
+    <span><strong>${wrongCount}</strong>曾错</span>
+    <span><strong>${trAvailable}</strong>已译</span>
+    ${trAvailable < allQs.length ? `<span style="color: var(--gold); margin-left: auto;">⚠ 翻译进度 ${trAvailable}/${allQs.length}</span>` : `<span style="color: var(--green); margin-left: auto;">✅ 全部已翻译</span>`}
+  </div>`;
+
+  // Filter
+  html += `<div class="toc">
+    <span class="toc-label">表示:</span>
+    <button class="filter-btn ${STATE.filterMode==='all'?'active':''}" data-filter="all">全部 (${allQs.length})</button>
+    <button class="filter-btn ${STATE.filterMode===1?'active':''}" data-filter="1">第一章 (${data.questions.part1.length})</button>
+    <button class="filter-btn ${STATE.filterMode===2?'active':''}" data-filter="2">第二章 (${data.questions.part2.length})</button>
+    <button class="filter-btn ${STATE.filterMode===3?'active':''}" data-filter="3">第三章 (${data.questions.part3.length})</button>
+    ${wrongCount > 0 ? `<button class="filter-btn ${STATE.filterMode==='wrong'?'active':''}" data-filter="wrong" style="border-color: var(--vermilion); color: var(--vermilion);">曾错过 (${wrongCount})</button>` : ''}
+  </div>`;
+
+  // Questions, grouped by part
+  if (STATE.filterMode === 'all' || typeof STATE.filterMode === 'number' || STATE.filterMode === 'wrong') {
+    [1, 2, 3].forEach(p => {
+      const qsInPart = filtered.filter(q => q.part === p);
+      if (qsInPart.length === 0) return;
+      html += `<div class="part-heading">
+        <span>第${PART_KANJI[p]}章 ${PART_NAMES[p]}</span>
+        <span class="part-heading-en">PART ${p} · ${PART_NAMES_ZH[p]} · ${qsInPart.length} questions</span>
+      </div>`;
+      qsInPart.forEach(q => html += renderQuestion(q));
+    });
+  }
+
+  if (filtered.length === 0) {
+    html += '<div class="loading">この条件の問題はありません</div>';
+  }
+
+  container.innerHTML = html;
+
+  // Bind filter
+  container.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.onclick = () => {
+      const f = btn.dataset.filter;
+      STATE.filterMode = (f === 'all' || f === 'wrong') ? f : Number(f);
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  });
+
+  // Bind audio
+  container.querySelectorAll('.audio-play-btn').forEach(btn => {
+    btn.onclick = () => speakJP(btn.dataset.text);
+  });
+}
+
+render();
+</script>
+
+</body>
+</html>

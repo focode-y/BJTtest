@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ja" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="robots" content="notranslate">
+<meta http-equiv="Content-Language" content="ja">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BJT 模擬試験 ― Mock Exam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F1E8;
+    --paper-dark: #EBE4D2;
+    --ink: #1A1A2E;
+    --ink-soft: #3D3D52;
+    --vermilion: #C13B3B;
+    --vermilion-dark: #962929;
+    --slate: #2E4057;
+    --gold: #A08752;
+    --line: rgba(26, 26, 46, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* 和纸纹理 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(160, 135, 82, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(193, 59, 59, 0.03) 0%, transparent 50%);
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.18 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.6;
+    z-index: 0;
+    mix-blend-mode: multiply;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ── Header ─────────────────────────────── */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 56px;
+  }
+  .logo-block {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .logo-mark {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--vermilion);
+    letter-spacing: -0.02em;
+  }
+  .logo-sub {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    letter-spacing: 0.3em;
+  }
+  .nav-link {
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    transition: all 0.2s;
+  }
+  .nav-link:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  /* ── Hero ────────────────────────────────── */
+  .hero {
+    position: relative;
+    margin-bottom: 56px;
+  }
+  .hero-kanji {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: clamp(36px, 7.5vw, 88px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+  .hero-kanji .accent {
+    color: var(--vermilion);
+    position: relative;
+  }
+  .hero-kanji .accent::after {
+    content: '';
+    position: absolute;
+    right: -14px;
+    top: 14px;
+    width: 10px;
+    height: 10px;
+    background: var(--vermilion);
+    border-radius: 50%;
+  }
+  .hero-sub {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 18px;
+    color: var(--ink-soft);
+    margin-top: 20px;
+    letter-spacing: 0.08em;
+  }
+  .hero-sub::before {
+    content: '—— ';
+    color: var(--vermilion);
+  }
+
+  /* ── Spec card ───────────────────────────── */
+  .spec-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-bottom: 48px;
+  }
+  .spec-cell {
+    background: var(--paper);
+    padding: 24px 20px;
+  }
+  .spec-label {
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .spec-value {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .spec-value .unit {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  /* ── Part breakdown ──────────────────────── */
+  .parts {
+    margin-bottom: 56px;
+  }
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .section-heading-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--vermilion);
+    letter-spacing: 0.2em;
+  }
+  .section-heading-text {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .section-heading-line {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .part-row {
+    display: grid;
+    grid-template-columns: 60px 1fr auto auto;
+    gap: 20px;
+    align-items: center;
+    padding: 22px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .part-num {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--vermilion);
+    line-height: 1;
+  }
+  .part-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .part-desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+  .part-stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--slate);
+    text-align: right;
+  }
+  .part-stat-num {
+    font-size: 22px;
+    color: var(--ink);
+  }
+
+  /* ── CTA ─────────────────────────────────── */
+  .cta-wrap {
+    margin: 64px 0 48px;
+    text-align: center;
+  }
+  .cta {
+    display: inline-block;
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--paper);
+    background: var(--ink);
+    padding: 22px 64px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .cta:hover {
+    background: var(--vermilion);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(193, 59, 59, 0.25);
+  }
+  .cta-hint {
+    display: block;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 16px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Trend chart ────────────────────────── */
+  .trend-chart {
+    margin-bottom: 28px;
+    background: white;
+    padding: 20px 24px;
+    border: 1px solid var(--line);
+  }
+  .trend-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+  }
+  .trend-chart svg {
+    width: 100%;
+    height: 200px;
+    display: block;
+  }
+
+  /* ── History ─────────────────────────────── */
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  .history-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+    border-bottom: 2px solid var(--ink);
+    font-weight: 500;
+  }
+  .history-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .history-table tr:hover td {
+    background: rgba(193, 59, 59, 0.04);
+  }
+  .level-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .level-pill.j1p, .level-pill.j1 { background: var(--vermilion); }
+  .level-pill.j2  { background: var(--gold); }
+  .level-pill.j3  { background: var(--slate); }
+  .history-empty {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  /* ── Footer ──────────────────────────────── */
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Entry animation ────────────────────── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeIn 0.7s ease-out forwards;
+  }
+  .fade-in:nth-child(1) { animation-delay: 0.05s; }
+  .fade-in:nth-child(2) { animation-delay: 0.15s; }
+  .fade-in:nth-child(3) { animation-delay: 0.25s; }
+  .fade-in:nth-child(4) { animation-delay: 0.35s; }
+  .fade-in:nth-child(5) { animation-delay: 0.45s; }
+  @keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 960px) {
+    .spec-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 32px 20px 60px; }
+    .spec-grid { grid-template-columns: repeat(2, 1fr); }
+    .part-row { grid-template-columns: 48px 1fr; gap: 12px; }
+    .part-stat { grid-column: 2; text-align: left; }
+    header { flex-direction: column; gap: 16px; align-items: flex-start; }
+    .history-table { font-size: 12px; }
+    .history-table th, .history-table td { padding: 10px 8px; }
+    .trend-chart { padding: 14px 16px; }
+  }
+  @media (max-width: 400px) {
+    .hero-kanji { font-size: 28px; }
+    .history-table { font-size: 11px; }
+    .history-table th, .history-table td { padding: 8px 4px; }
+  }
+</style>
+<script src="questions-data.js"></script>
+<script src="bjt-local-api.js"></script>
+<script src="bjt-common.js"></script>
+</head>
+<body class="notranslate" translate="no">
+
+<div class="container">
+
+  <header class="fade-in">
+    <div class="logo-block">
+      <span class="logo-mark">BJT</span>
+      <span class="logo-sub">模擬試験・MOCK</span>
+    </div>
+    <a href="review.html" class="nav-link">錯題本 →</a>
+  </header>
+
+  <section class="hero fade-in">
+    <h1 class="hero-kanji">
+      ビジネス日本語<br>
+      <span class="accent">模擬試験</span>
+    </h1>
+    <p class="hero-sub">80問・105分・ビジネス日本語</p>
+  </section>
+
+
+
+  <section class="parts fade-in">
+    <div class="section-heading">
+      <span class="section-heading-num">01 / 03</span>
+      <span class="section-heading-text">出題構成</span>
+      <span class="section-heading-line"></span>
+    </div>
+
+    <div class="part-row">
+      <div class="part-num">Ⅰ</div>
+      <div>
+        <div class="part-title">聴解</div>
+        <div class="part-desc">場面把握・発言聴解・総合聴解</div>
+      </div>
+      <div class="part-stat"><span class="part-stat-num">25</span> 問</div>
+      <div class="part-stat"><span class="part-stat-num">45</span> 分</div>
+    </div>
+    <div class="part-row">
+      <div class="part-num">Ⅱ</div>
+      <div>
+        <div class="part-title">聴読解</div>
+        <div class="part-desc">状況把握・資料聴読解・総合聴読解</div>
+      </div>
+      <div class="part-stat"><span class="part-stat-num">25</span> 問</div>
+      <div class="part-stat"><span class="part-stat-num">30</span> 分</div>
+    </div>
+    <div class="part-row">
+      <div class="part-num">Ⅲ</div>
+      <div>
+        <div class="part-title">読解</div>
+        <div class="part-desc">語彙文法・表現読解・総合読解</div>
+      </div>
+      <div class="part-stat"><span class="part-stat-num">30</span> 問</div>
+      <div class="part-stat"><span class="part-stat-num">30</span> 分</div>
+    </div>
+  </section>
+
+  <div class="cta-wrap fade-in">
+    <a href="exam.html" class="cta">試験開始 / START</a>
+    <span class="cta-hint">※ ブラウザの音声読み上げを使用するため、音量をご確認ください</span>
+    <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="study.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 14px 32px; font-size: 14px;">学習モード(中日対訳) →</a>
+      <a href="review.html" class="cta" style="background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 14px 32px; font-size: 14px;">錯題本 →</a>
+    </div>
+  </div>
+
+  <section class="history fade-in">
+    <div class="section-heading">
+      <span class="section-heading-num">02 / 03</span>
+      <span class="section-heading-text">受験履歴</span>
+      <span class="section-heading-line"></span>
+    </div>
+    <div id="history-container">
+      <div class="history-empty">読み込み中...</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>BJT MOCK EXAM</span>
+    <span>本試験ではありません · Practice Only</span>
+  </footer>
+</div>
+
+<script>
+  // 加载历史成绩 (本地版,从 localStorage 读)
+  function loadHistory() {
+    const container = document.getElementById('history-container');
+    try {
+      const data = window.bjtApiReview({});
+      const hist = data.history || [];
+
+      if (hist.length === 0) {
+        container.innerHTML = '<div class="history-empty">まだ受験記録がありません。初回挑戦、頑張って！</div>';
+        return;
+      }
+
+      const formatDate = (s) => {
+        const d = new Date(s + 'Z');
+        return d.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }) + ' ' +
+               d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+      };
+
+      const formatDuration = (s) => {
+        const m = Math.floor(s / 60);
+        return m + '分';
+      };
+
+      const bjtOf = (score, total) => {
+        return Math.round((score / total) * 800);
+      };
+
+      const levelOf = (score, total) => {
+        const lv = BJT_COMMON.getLevel(bjtOf(score, total));
+        return lv.name;
+      };
+
+      // Trend chart (SVG)
+      let trendHtml = '';
+      if (hist.length >= 2) {
+        trendHtml = renderTrendChart(hist);
+      }
+
+      const rows = hist.map((h, i) => {
+        const lv = levelOf(h.score_total, h.total_questions);
+        const lvClass = lv.toLowerCase().replace('+', 'p');
+        return `
+          <tr>
+            <td>${String(hist.length - i).padStart(2, '0')}</td>
+            <td>${formatDate(h.taken_at)}</td>
+            <td>${h.score_total}/${h.total_questions}</td>
+            <td>${h.score_part1}·${h.score_part2}·${h.score_part3}</td>
+            <td>${formatDuration(h.duration_seconds)}</td>
+            <td><span class="level-pill ${lvClass}">${lv}</span></td>
+            <td><a href="review.html?result_id=${h.id}" style="color:var(--vermilion);text-decoration:none;">→</a></td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = trendHtml + `
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>日時</th>
+              <th>総合</th>
+              <th>I · II · III</th>
+              <th>時間</th>
+              <th>等級</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    } catch (e) {
+      container.innerHTML = '<div class="history-empty">履歴の読み込みに失敗しました</div>';
+    }
+  }
+
+  function renderTrendChart(hist) {
+    // hist is sorted newest first; reverse for chronological
+    const items = hist.slice(0, 10).reverse();
+    const W = 600, H = 200;
+    const padL = 40, padR = 20, padT = 20, padB = 30;
+    const chartW = W - padL - padR;
+    const chartH = H - padT - padB;
+
+    const scores = items.map(h => Math.round((h.score_total / (h.total_questions || 80)) * 800));
+
+    // Level boundaries
+    const levels = [
+      { y: 200, label: 'J4', color: '#c9c5bc' },
+      { y: 320, label: 'J3', color: '#2E4057' },
+      { y: 420, label: 'J2', color: '#A08752' },
+      { y: 530, label: 'J1', color: '#d17b4e' },
+      { y: 600, label: 'J1+', color: '#C13B3B' },
+    ];
+
+    const toX = (i) => padL + (items.length > 1 ? (i / (items.length - 1)) * chartW : chartW / 2);
+    const toY = (s) => padT + chartH - (s / 800) * chartH;
+
+    let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+
+    // Level lines
+    levels.forEach(lv => {
+      const y = toY(lv.y);
+      svg += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${lv.color}" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>`;
+      svg += `<text x="${padL - 4}" y="${y + 3}" text-anchor="end" font-size="9" font-family="JetBrains Mono,monospace" fill="${lv.color}" opacity="0.7">${lv.label}</text>`;
+    });
+
+    // Axis lines
+    svg += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" stroke="#1A1A2E" stroke-width="1" opacity="0.2"/>`;
+    svg += `<line x1="${padL}" y1="${H - padB}" x2="${W - padR}" y2="${H - padB}" stroke="#1A1A2E" stroke-width="1" opacity="0.2"/>`;
+
+    // Polyline
+    const points = scores.map((s, i) => `${toX(i)},${toY(s)}`).join(' ');
+    svg += `<polyline points="${points}" fill="none" stroke="#C13B3B" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+    // Data points + labels
+    scores.forEach((s, i) => {
+      const x = toX(i);
+      const y = toY(s);
+      svg += `<circle cx="${x}" cy="${y}" r="4" fill="#C13B3B" stroke="#F5F1E8" stroke-width="2"/>`;
+      svg += `<text x="${x}" y="${y - 10}" text-anchor="middle" font-size="10" font-family="JetBrains Mono,monospace" fill="#1A1A2E" font-weight="700">${s}</text>`;
+      // X-axis label (exam number)
+      svg += `<text x="${x}" y="${H - padB + 16}" text-anchor="middle" font-size="9" font-family="JetBrains Mono,monospace" fill="#3D3D52">#${i + 1}</text>`;
+    });
+
+    svg += '</svg>';
+
+    return `<div class="trend-chart"><div class="trend-title">スコア推移 / 分数趋势</div>${svg}</div>`;
+  }
+
+  loadHistory();
+</script>
+
+</body>
+</html>
