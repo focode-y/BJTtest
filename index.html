@@ -56,17 +56,12 @@
     mix-blend-mode: multiply;
   }
 
-  html, body { height: 100%; overflow: auto; }
-
   .container {
     position: relative;
     z-index: 1;
     max-width: 960px;
     margin: 0 auto;
     padding: 20px 32px 16px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
   }
 
   /* ── Header ─────────────────────────────── */
@@ -310,18 +305,8 @@
   }
 
   /* ── History ─────────────────────────────── */
-  .history {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-  #history-container {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-  }
+  .history { }
+  #history-container { }
   .history-table {
     width: 100%;
     border-collapse: collapse;
@@ -335,8 +320,6 @@
     color: var(--ink-soft);
     border-bottom: 2px solid var(--ink);
     font-weight: 500;
-    position: sticky;
-    top: 0;
     background: var(--paper);
   }
   .history-table td {
@@ -368,27 +351,31 @@
 
   /* ── Guide ───────────────────────────────── */
   .guide {
-    flex-shrink: 0;
-    margin-top: 8px;
+    margin-top: 12px;
     border: 1px solid var(--line);
     font-size: 12px;
   }
-  .guide summary {
+  .guide-title {
     padding: 8px 14px;
-    cursor: pointer;
     color: var(--ink-soft);
     letter-spacing: 0.1em;
-    font-family: 'Noto Sans JP', sans-serif;
     background: var(--paper-dark);
+    font-size: 11px;
   }
-  .guide summary:hover { color: var(--ink); }
   .guide-body {
-    padding: 12px 14px;
+    padding: 10px 14px;
     line-height: 1.8;
     color: var(--ink-soft);
   }
-  .guide-body p { margin-bottom: 4px; }
+  .guide-body p { margin-bottom: 2px; }
   .guide-body b { color: var(--ink); font-weight: 500; }
+  .guide-disclaimer {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--line);
+    font-size: 11px;
+    color: var(--gold);
+  }
 
   /* ── Footer ──────────────────────────────── */
   footer {
@@ -511,15 +498,16 @@
     </div>
   </section>
 
-  <details class="guide fade-in">
-    <summary>使用说明 / ご利用ガイド</summary>
+  <div class="guide fade-in">
+    <div class="guide-title">使用说明 / ご利用ガイド</div>
     <div class="guide-body">
-      <p><b>1. 直接打开即可答题</b> — 无需注册登录，用浏览器打开本页面，选择回次，点击「試験開始」即可。</p>
-      <p><b>2. 成绩保存在浏览器中</b> — 答题记录存储在本机浏览器的 localStorage 中，换浏览器或清除浏览数据会丢失记录。</p>
-      <p><b>3. 听力使用浏览器语音合成</b> — 第1·2部分的听力题通过浏览器内置TTS朗读日语，请确保设备音量已开启。</p>
-      <p><b>4. 考试模式 vs 学习模式</b> — 答题页右上角可切换：考试模式下听力选项文字隐藏（模拟真题），学习模式下全部显示。</p>
+      <p><b>1. 直接打开即可答题</b> — 无需注册登录，选择回次，点击「試験開始」即可。</p>
+      <p><b>2. 成绩保存在浏览器中</b> — 答题记录存储在本机浏览器中，换浏览器或清除浏览数据会丢失。</p>
+      <p><b>3. 听力使用浏览器语音合成</b> — 第1·2部分的听力通过浏览器TTS朗读，请确保音量已开启。</p>
+      <p><b>4. 考试模式 vs 学习模式</b> — 答题页右上角可切换：考试模式隐藏听力选项文字，学习模式全部显示。</p>
+      <p class="guide-disclaimer">本系统仅供个人学习练习参考，非官方BJT考试机构出品。题目内容为模拟题，不代表真实考试的出题范围与难度。</p>
     </div>
-  </details>
+  </div>
 
   <footer>
     <span>BJT MOCK EXAM</span>
