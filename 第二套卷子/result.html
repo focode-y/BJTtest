@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="robots" content="notranslate">
+<meta http-equiv="Content-Language" content="ja">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>試験結果 ― BJT 模擬試験</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F1E8; --paper-dark: #EBE4D2;
+    --ink: #1A1A2E; --ink-soft: #3D3D52;
+    --vermilion: #C13B3B; --slate: #2E4057;
+    --gold: #A08752; --green: #5a7c3f;
+    --line: rgba(26,26,46,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif; min-height: 100vh;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.18 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.5; mix-blend-mode: multiply;
+  }
+  .container { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 56px;
+  }
+  .logo-mark {
+    font-family: 'Shippori Mincho B1', serif; font-size: 28px;
+    font-weight: 800; color: var(--vermilion);
+  }
+  .nav-link {
+    font-size: 13px; color: var(--ink-soft); text-decoration: none;
+    letter-spacing: 0.15em; padding: 8px 16px; border: 1px solid var(--line);
+  }
+  .nav-link:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* ── Grand card ─────────────────────────── */
+  .grand {
+    position: relative;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 56px 48px 48px;
+    margin-bottom: 48px;
+    overflow: hidden;
+  }
+  .grand::before {
+    content: '合';
+    position: absolute;
+    top: -60px; right: -30px;
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 380px; font-weight: 800;
+    color: rgba(193, 59, 59, 0.15);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .grand-label {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 13px; letter-spacing: 0.25em;
+    color: rgba(245, 241, 232, 0.6);
+    margin-bottom: 12px;
+  }
+  .grand-score {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 120px; font-weight: 800;
+    line-height: 1; letter-spacing: -0.03em;
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .grand-score .slash { color: var(--vermilion); font-size: 60px; }
+  .grand-score .total { color: rgba(245, 241, 232, 0.5); font-size: 60px; }
+  .grand-meta {
+    margin-top: 24px;
+    display: flex; gap: 40px; flex-wrap: wrap;
+    position: relative;
+  }
+  .grand-meta-item {
+    border-left: 2px solid var(--vermilion);
+    padding-left: 14px;
+  }
+  .grand-meta-label {
+    font-size: 11px; letter-spacing: 0.18em;
+    color: rgba(245,241,232,0.6); margin-bottom: 4px;
+  }
+  .grand-meta-value {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 22px; font-weight: 600;
+  }
+  .grand-level {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px; font-weight: 700;
+    background: var(--vermilion);
+    color: white;
+    padding: 3px 10px;
+    margin-left: 8px;
+  }
+
+  /* ── Part breakdown ────────────────────── */
+  .section-heading {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
+  }
+  .section-heading-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--vermilion); letter-spacing: 0.2em;
+  }
+  .section-heading-text {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 22px; font-weight: 600;
+  }
+  .section-heading-line { flex: 1; height: 1px; background: var(--line); }
+
+  .part-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+  .part-card {
+    background: white;
+    padding: 28px 24px;
+    border-top: 3px solid var(--vermilion);
+  }
+  .part-card-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 15px; color: var(--ink-soft);
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+  }
+  .part-card-score {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 44px; font-weight: 800;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .part-card-score .of {
+    font-size: 18px; color: var(--ink-soft); font-weight: 400;
+  }
+  .part-card-bar {
+    margin-top: 14px;
+    height: 6px; background: var(--paper-dark);
+    position: relative;
+  }
+  .part-card-bar-fill {
+    position: absolute; inset: 0;
+    background: var(--vermilion);
+    width: 0;
+    transition: width 1.2s cubic-bezier(.2,.7,.3,1);
+  }
+  .part-card-pct {
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--ink-soft);
+  }
+
+  /* ── Type breakdown ─────────────────────── */
+  .type-breakdown {
+    margin-bottom: 56px;
+  }
+  .type-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 60px 50px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .type-label {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .type-label-zh {
+    display: block;
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-weight: 400;
+  }
+  .type-bar-wrap { padding: 0 4px; }
+  .type-bar-bg {
+    height: 10px;
+    background: var(--paper-dark);
+    position: relative;
+  }
+  .type-bar-fill {
+    position: absolute;
+    inset: 0;
+    width: 0;
+    transition: width 1.2s cubic-bezier(.2,.7,.3,1);
+  }
+  .type-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    text-align: right;
+    color: var(--ink-soft);
+  }
+  .type-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  /* ── Level scale ────────────────────────── */
+  .level-scale {
+    margin-bottom: 56px;
+  }
+  .level-bar {
+    height: 52px;
+    background: linear-gradient(to right,
+      #c9c5bc 0%, #c9c5bc 25%,
+      var(--slate) 25%, var(--slate) 40%,
+      var(--gold) 40%, var(--gold) 52.5%,
+      #d17b4e 52.5%, #d17b4e 66.25%,
+      var(--vermilion) 66.25%, var(--vermilion) 75%,
+      #962929 75%, #962929 100%
+    );
+    position: relative;
+    border: 1px solid var(--ink);
+  }
+  .level-marks {
+    position: relative; margin-top: 6px; height: 26px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-soft);
+  }
+  .level-mark {
+    position: absolute;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+  .level-pointer {
+    position: absolute;
+    top: -14px;
+    transform: translateX(-50%);
+    font-size: 18px;
+    color: var(--vermilion);
+    text-shadow: 0 0 6px var(--paper);
+  }
+  .level-pointer::after {
+    content: '';
+    position: absolute; left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    width: 2px; height: 18px;
+    background: var(--ink);
+  }
+
+  /* ── CTAs ──────────────────────────────── */
+  .cta-row {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-top: 32px;
+  }
+  .cta {
+    display: inline-block;
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.12em;
+    padding: 16px 32px; text-decoration: none;
+    cursor: pointer; border: 1px solid var(--ink);
+    background: var(--paper); color: var(--ink);
+    transition: all 0.2s;
+  }
+  .cta:hover { background: var(--ink); color: var(--paper); }
+  .cta.primary { background: var(--vermilion); color: white; border-color: var(--vermilion); }
+  .cta.primary:hover { background: var(--ink); border-color: var(--ink); }
+
+  .state-screen {
+    min-height: 60vh;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    gap: 16px; text-align: center;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--line);
+    border-top-color: var(--vermilion);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 960px) {
+    .part-cards { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 32px 20px 60px; }
+    .grand { padding: 32px 24px; }
+    .grand-score { font-size: 80px; }
+    .grand-score .slash, .grand-score .total { font-size: 40px; }
+    .grand-meta { gap: 20px; }
+    .part-cards { grid-template-columns: 1fr; }
+    .grand::before { font-size: 220px; top: -30px; right: -20px; }
+    .type-row { grid-template-columns: 120px 1fr 50px 42px; gap: 8px; }
+    .type-label { font-size: 12px; }
+  }
+  @media (max-width: 400px) {
+    .grand-score { font-size: 60px; }
+    .type-row { grid-template-columns: 100px 1fr 42px 36px; gap: 6px; }
+  }
+</style>
+<script src="questions-data.js"></script>
+<script src="bjt-local-api.js"></script>
+<script src="bjt-common.js"></script>
+</head>
+<body class="notranslate" translate="no">
+
+<div class="container">
+
+  <header>
+    <a href="index.html" style="text-decoration:none"><span class="logo-mark">BJT</span></a>
+    <a href="review.html" class="nav-link">錯題本 →</a>
+  </header>
+
+  <div id="content">
+    <div class="state-screen">
+      <div class="spinner"></div>
+      <p>結果を集計中…</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const LEVEL_TABLE = BJT_COMMON.LEVEL_TABLE;
+const TYPE_LABELS_ZH = BJT_COMMON.TYPE_LABELS_ZH;
+const TYPE_LABELS = BJT_COMMON.TYPE_LABELS;
+
+function getLevel(bjtScore) {
+  return BJT_COMMON.getLevel(bjtScore);
+}
+
+function render(data) {
+  const {
+    score_total, total_part1, total_part2, total_part3,
+    score_part1, score_part2, score_part3,
+    bjt_score_estimate, level,
+    wrong_count, duration_seconds, result_id,
+    type_breakdown,
+  } = data;
+  const totalQ = total_part1 + total_part2 + total_part3;
+  const lvObj = getLevel(bjt_score_estimate);
+  const min = Math.floor(duration_seconds / 60);
+  const sec = duration_seconds % 60;
+
+  const pointerPct = Math.min(100, Math.max(0, (bjt_score_estimate / 800) * 100));
+
+  document.getElementById('content').innerHTML = `
+    <div class="grand">
+      <div class="grand-label">SCORE / 得点</div>
+      <div class="grand-score">
+        <span>${score_total}</span>
+        <span class="slash">/</span>
+        <span class="total">${totalQ}</span>
+      </div>
+      <div class="grand-meta">
+        <div class="grand-meta-item">
+          <div class="grand-meta-label">BJT推定スコア</div>
+          <div class="grand-meta-value">${bjt_score_estimate}
+            <span class="grand-level">${level}</span>
+          </div>
+        </div>
+        <div class="grand-meta-item">
+          <div class="grand-meta-label">所要時間</div>
+          <div class="grand-meta-value">${min}分 ${String(sec).padStart(2,'0')}秒</div>
+        </div>
+        <div class="grand-meta-item">
+          <div class="grand-meta-label">間違い</div>
+          <div class="grand-meta-value">${wrong_count} 問</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-heading">
+      <span class="section-heading-num">01 / 03</span>
+      <span class="section-heading-text">章別得点</span>
+      <span class="section-heading-line"></span>
+    </div>
+    <div class="part-cards">
+      ${renderPartCard('第一章 聴解', score_part1, total_part1)}
+      ${renderPartCard('第二章 聴読解', score_part2, total_part2)}
+      ${renderPartCard('第三章 読解', score_part3, total_part3)}
+    </div>
+
+    ${renderTypeBreakdown(type_breakdown)}
+
+    <div class="section-heading">
+      <span class="section-heading-num">03 / 03</span>
+      <span class="section-heading-text">BJT等級換算</span>
+      <span class="section-heading-line"></span>
+    </div>
+    <div class="level-scale">
+      <div class="level-bar">
+        <div class="level-pointer" style="left:${pointerPct}%">▼</div>
+      </div>
+      <div class="level-marks">
+        <span class="level-mark" style="left:0%">0</span>
+        <span class="level-mark" style="left:25%">J4<br>200</span>
+        <span class="level-mark" style="left:40%">J3<br>320</span>
+        <span class="level-mark" style="left:52.5%">J2<br>420</span>
+        <span class="level-mark" style="left:66.25%">J1<br>530</span>
+        <span class="level-mark" style="left:75%">J1+<br>600</span>
+        <span class="level-mark" style="left:100%">800</span>
+      </div>
+      <div style="margin-top:40px;padding:20px 24px;background:white;border-left:3px solid var(--vermilion);font-size:14px;line-height:1.8">
+        <strong style="font-family:'Shippori Mincho B1',serif;font-size:16px">${lvObj.name}</strong> —— ${lvObj.desc}
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <a href="review.html?result_id=${result_id}" class="cta primary">錯題を復習 →</a>
+      <a href="exam.html" class="cta">もう一度挑戦</a>
+      <a href="index.html" class="cta">TOPへ</a>
+    </div>
+  `;
+
+  // Animate all bars
+  requestAnimationFrame(() => {
+    document.querySelectorAll('[data-width]').forEach(el => {
+      el.style.width = el.dataset.width + '%';
+    });
+  });
+}
+
+function renderTypeBreakdown(breakdown) {
+  if (!breakdown || Object.keys(breakdown).length === 0) return '';
+  const typeOrder = ['bamen','hatsugen','sogo_t','jokyo','shiryo','sogo_cd','goi','hyogen','sogo_d'];
+  let rows = '';
+  typeOrder.forEach(type => {
+    const tb = breakdown[type];
+    if (!tb) return;
+    const pct = tb.total > 0 ? Math.round((tb.correct / tb.total) * 100) : 0;
+    const color = pct >= 75 ? 'var(--green)' : pct >= 50 ? 'var(--gold)' : 'var(--vermilion)';
+    rows += `
+      <div class="type-row">
+        <div class="type-label">${TYPE_LABELS[type] || type}<span class="type-label-zh">${TYPE_LABELS_ZH[type] || ''}</span></div>
+        <div class="type-bar-wrap">
+          <div class="type-bar-bg"><div class="type-bar-fill" data-width="${pct}" style="background:${color}"></div></div>
+        </div>
+        <div class="type-score">${tb.correct}/${tb.total}</div>
+        <div class="type-pct" style="color:${color}">${pct}%</div>
+      </div>`;
+  });
+  return `
+    <div class="section-heading">
+      <span class="section-heading-num">02 / 03</span>
+      <span class="section-heading-text">題型別分析</span>
+      <span class="section-heading-line"></span>
+    </div>
+    <div class="type-breakdown">${rows}</div>
+  `;
+}
+
+function renderPartCard(title, score, total) {
+  const pct = total > 0 ? Math.round((score / total) * 100) : 0;
+  return `
+    <div class="part-card">
+      <div class="part-card-title">${title}</div>
+      <div class="part-card-score">${score}<span class="of"> / ${total}</span></div>
+      <div class="part-card-bar"><div class="part-card-bar-fill" data-width="${pct}"></div></div>
+      <div class="part-card-pct">正答率 ${pct}%</div>
+    </div>
+  `;
+}
+
+// Load data
+(async function init() {
+  // First try sessionStorage (just submitted)
+  try {
+    const cached = sessionStorage.getItem('bjt_last_result');
+    if (cached) {
+      const data = JSON.parse(cached);
+      render(data);
+      return;
+    }
+  } catch {}
+
+  // Otherwise fetch via review API using ?id=
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) {
+    document.getElementById('content').innerHTML = `
+      <div class="state-screen">
+        <h2 style="font-family:'Shippori Mincho B1',serif">結果が見つかりません</h2>
+        <a href="index.html" class="cta">TOPへ</a>
+      </div>`;
+    return;
+  }
+
+  try {
+    const data = window.bjtApiReview({ result_id: id });
+    const hist = data.history.find(h => h.id == id) || data.history[0];
+    if (!hist) throw new Error('見つかりません');
+
+    const totalQ = hist.total_questions || 80;
+    const bjt = Math.round((hist.score_total / totalQ) * 800);
+    const lv = LEVEL_TABLE.find(l => bjt >= l.min && bjt <= l.max);
+
+    // Estimate parts totals (25/25/30)
+    // Reconstruct type_breakdown from wrong_answers data
+    const allQs = [...window.BJT_DATA.questions.part1, ...window.BJT_DATA.questions.part2, ...window.BJT_DATA.questions.part3];
+    const wrongIds = new Set(data.wrong_answers.map(w => w.question_id));
+    const tb = {};
+    allQs.forEach(q => {
+      if (!tb[q.type]) tb[q.type] = { correct: 0, total: 0, label: TYPE_LABELS[q.type] || q.type, label_zh: TYPE_LABELS_ZH[q.type] || q.type };
+      tb[q.type].total += 1;
+      if (!wrongIds.has(q.id)) tb[q.type].correct += 1;
+    });
+
+    render({
+      score_total: hist.score_total,
+      score_part1: hist.score_part1,
+      score_part2: hist.score_part2,
+      score_part3: hist.score_part3,
+      total_part1: 25, total_part2: 25, total_part3: 30,
+      bjt_score_estimate: bjt,
+      level: lv ? lv.name : 'J5',
+      wrong_count: data.wrong_answers.length,
+      duration_seconds: hist.duration_seconds,
+      result_id: hist.id,
+      type_breakdown: tb,
+    });
+  } catch (e) {
+    document.getElementById('content').innerHTML = `
+      <div class="state-screen">
+        <h2 style="font-family:'Shippori Mincho B1',serif;color:var(--vermilion)">読み込み失敗</h2>
+        <p>${e.message}</p>
+        <a href="index.html" class="cta">TOPへ</a>
+      </div>`;
+  }
+})();
+</script>
+
+</body>
+</html>

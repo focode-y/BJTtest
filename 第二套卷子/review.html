@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ja" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="robots" content="notranslate">
+<meta http-equiv="Content-Language" content="ja">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>錯題本 ― BJT 模擬試験</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F1E8; --paper-dark: #EBE4D2;
+    --ink: #1A1A2E; --ink-soft: #3D3D52;
+    --vermilion: #C13B3B; --slate: #2E4057;
+    --gold: #A08752; --green: #5a7c3f;
+    --line: rgba(26,26,46,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif; min-height: 100vh; line-height: 1.7;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.18 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.5; mix-blend-mode: multiply;
+  }
+  .container { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 40px 28px 80px; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 40px;
+  }
+  .logo-mark {
+    font-family: 'Shippori Mincho B1', serif; font-size: 26px;
+    font-weight: 800; color: var(--vermilion); text-decoration: none;
+  }
+  .nav-link {
+    font-size: 13px; color: var(--ink-soft); text-decoration: none;
+    letter-spacing: 0.15em; padding: 8px 16px; border: 1px solid var(--line);
+  }
+  .nav-link:hover { background: var(--ink); color: var(--paper); }
+
+  .page-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 48px; font-weight: 800; margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .page-title .zh { color: var(--vermilion); }
+  .page-sub {
+    font-size: 14px; color: var(--ink-soft);
+    letter-spacing: 0.1em; margin-bottom: 32px;
+  }
+
+  /* Filter */
+  .filter-bar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+  .filter-label {
+    font-size: 12px; color: var(--ink-soft);
+    letter-spacing: 0.15em; margin-right: 8px;
+  }
+  .filter-chip {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 13px; padding: 6px 14px;
+    border: 1px solid var(--line);
+    background: var(--paper); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-chip:hover { border-color: var(--ink); }
+  .filter-chip.active {
+    background: var(--ink); color: var(--paper); border-color: var(--ink);
+  }
+  .exam-selector {
+    font-family: inherit; font-size: 13px;
+    padding: 7px 12px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .stats-row {
+    display: flex; gap: 24px; flex-wrap: wrap;
+    margin-bottom: 28px; padding: 16px 20px;
+    background: var(--ink); color: var(--paper);
+  }
+  .stat-item {
+    font-size: 13px; letter-spacing: 0.1em;
+  }
+  .stat-num {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 24px; font-weight: 700; color: var(--vermilion);
+    margin-right: 6px;
+  }
+
+  /* Wrong item card */
+  .wrong-list { display: flex; flex-direction: column; gap: 20px; }
+  .wrong-card {
+    background: white;
+    border-left: 3px solid var(--vermilion);
+    padding: 24px 28px;
+    box-shadow: 2px 2px 0 var(--line);
+  }
+  .wrong-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; flex-wrap: wrap; gap: 10px;
+  }
+  .wrong-type {
+    display: inline-block;
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 11px; letter-spacing: 0.18em;
+    color: var(--paper); background: var(--vermilion);
+    padding: 3px 10px;
+  }
+  .wrong-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-soft);
+    letter-spacing: 0.1em;
+  }
+
+  .wrong-image { text-align: center; margin: 12px 0 16px; }
+  .wrong-image img {
+    max-width: 200px; max-height: 180px;
+    border: 1px solid var(--line); padding: 10px; background: var(--paper);
+  }
+  .wrong-passage {
+    background: var(--paper);
+    border-left: 3px solid var(--ink-soft);
+    padding: 14px 18px;
+    margin: 10px 0 14px;
+    font-size: 13px; line-height: 1.8;
+    white-space: pre-wrap;
+  }
+  .wrong-chart {
+    background: var(--paper); padding: 12px; margin: 10px 0 14px;
+    font-size: 13px;
+  }
+  .wrong-chart-table { width: 100%; border-collapse: collapse; }
+  .wrong-chart-table th, .wrong-chart-table td {
+    border: 1px solid var(--line); padding: 6px 10px;
+  }
+  .wrong-chart-title { font-weight: 600; margin-bottom: 8px; font-family: 'Shippori Mincho B1', serif; }
+
+  .wrong-audio {
+    background: var(--ink); color: var(--paper);
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .wrong-audio-btn {
+    background: var(--vermilion); color: white; border: none;
+    width: 36px; height: 36px; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wrong-audio-btn svg { width: 14px; height: 14px; }
+  .wrong-audio-text {
+    font-size: 12px; line-height: 1.5; opacity: 0.85;
+  }
+  .wrong-audio-text .script-head {
+    font-family: 'Shippori Mincho B1', serif;
+    letter-spacing: 0.15em; font-size: 10px;
+    opacity: 0.6; margin-bottom: 2px;
+  }
+
+  .wrong-q {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 17px; font-weight: 600;
+    margin-bottom: 14px; line-height: 1.6;
+  }
+
+  .wrong-options { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .wrong-option {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 10px 14px;
+    background: var(--paper);
+    font-size: 14px; line-height: 1.5;
+  }
+  .wrong-option-letter {
+    font-family: 'Shippori Mincho B1', serif;
+    font-weight: 700; font-size: 14px; flex-shrink: 0;
+    min-width: 20px;
+  }
+  .wrong-option.correct {
+    background: rgba(90, 124, 63, 0.12);
+    border-left: 3px solid var(--green);
+  }
+  .wrong-option.correct .wrong-option-letter { color: var(--green); }
+  .wrong-option.user-wrong {
+    background: rgba(193, 59, 59, 0.08);
+    border-left: 3px solid var(--vermilion);
+    text-decoration: line-through;
+    color: var(--ink-soft);
+  }
+  .wrong-option.user-wrong .wrong-option-letter { color: var(--vermilion); }
+  .wrong-tag {
+    display: inline-block;
+    font-size: 10px; padding: 2px 8px;
+    margin-left: 6px; letter-spacing: 0.1em;
+  }
+  .wrong-tag.correct { background: var(--green); color: white; }
+  .wrong-tag.user-wrong { background: var(--vermilion); color: white; }
+
+  .wrong-explanation {
+    background: var(--paper-dark);
+    padding: 14px 18px;
+    font-size: 14px; line-height: 1.75;
+    border: 1px dashed var(--ink-soft);
+  }
+  .wrong-explanation-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 12px; letter-spacing: 0.2em;
+    color: var(--vermilion); margin-bottom: 6px;
+  }
+
+  .wrong-zh {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  .empty-state {
+    text-align: center; padding: 80px 40px;
+    color: var(--ink-soft);
+  }
+  .empty-kanji {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 80px; font-weight: 800;
+    color: var(--paper-dark); line-height: 1;
+    margin-bottom: 20px;
+  }
+
+  .state-screen {
+    min-height: 50vh;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; gap: 16px;
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--line);
+    border-top-color: var(--vermilion);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 640px) {
+    .container { padding: 28px 16px 60px; }
+    .page-title { font-size: 34px; }
+    .wrong-card { padding: 18px 20px; }
+    .wrong-q { font-size: 15px; }
+    .wrong-option { font-size: 13px; padding: 8px 12px; }
+    .filter-bar { gap: 6px; }
+  }
+  @media (max-width: 400px) {
+    .page-title { font-size: 28px; }
+    .wrong-q { font-size: 14px; }
+    .wrong-option { font-size: 12px; }
+  }
+</style>
+<script src="questions-data.js"></script>
+<script src="bjt-local-api.js"></script>
+<script src="bjt-common.js"></script>
+<script src="translations.js"></script>
+</head>
+<body class="notranslate" translate="no">
+
+<div class="container">
+  <header>
+    <a href="index.html" class="logo-mark">BJT</a>
+    <a href="index.html" class="nav-link">← TOPへ</a>
+  </header>
+
+  <h1 class="page-title">錯題<span class="zh">本</span></h1>
+  <p class="page-sub">間違えた問題をじっくり復習しましょう</p>
+
+  <div class="filter-bar" id="filter-bar" style="display:none">
+    <span class="filter-label">試験:</span>
+    <select class="exam-selector" id="exam-selector"></select>
+    <span class="filter-label" style="margin-left:12px">章:</span>
+    <button class="filter-chip active" data-part="all">全て</button>
+    <button class="filter-chip" data-part="1">第一章</button>
+    <button class="filter-chip" data-part="2">第二章</button>
+    <button class="filter-chip" data-part="3">第三章</button>
+    <button class="filter-chip active" id="btn-toggle-zh" style="margin-left:auto;border-color:var(--gold);color:var(--gold)">中文翻译 ON</button>
+  </div>
+
+  <div id="content">
+    <div class="state-screen">
+      <div class="spinner"></div>
+      <p>読み込み中…</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const PART_NAMES = { 1: '第一章 聴解', 2: '第二章 聴読解', 3: '第三章 読解' };
+const TYPE_LABELS = BJT_COMMON.TYPE_LABELS;
+const escapeHtml = BJT_COMMON.escapeHtml;
+const escapeAttr = BJT_COMMON.escapeAttr;
+const speakJP = BJT_COMMON.speakJP;
+const tr = BJT_COMMON.tr;
+
+const STATE = {
+  allData: null,
+  currentWrong: [],
+  filterPart: 'all',
+  showTranslation: true,
+};
+
+function load(resultId) {
+  const container = document.getElementById('content');
+  container.innerHTML = '<div class="state-screen"><div class="spinner"></div><p>読み込み中…</p></div>';
+  try {
+    const data = window.bjtApiReview(resultId ? { result_id: resultId } : {});
+    STATE.allData = data;
+    STATE.currentWrong = data.wrong_answers;
+    renderFilterBar();
+    renderWrongList();
+  } catch (e) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-kanji">!</div><p>読み込み失敗: ${e.message}</p></div>`;
+  }
+}
+
+function renderFilterBar() {
+  const bar = document.getElementById('filter-bar');
+  bar.style.display = 'flex';
+  const sel = document.getElementById('exam-selector');
+
+  const history = STATE.allData.history || [];
+  let opts = '<option value="">全ての試験(集計)</option>';
+  history.forEach(h => {
+    const d = new Date(h.taken_at + 'Z');
+    const dateStr = d.toLocaleDateString('ja-JP') + ' ' + d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+    const sel = (STATE.allData.target_result_id === h.id) ? ' selected' : '';
+    opts += `<option value="${h.id}"${sel}>${dateStr} — ${h.score_total}/${h.total_questions}</option>`;
+  });
+  sel.innerHTML = opts;
+
+  sel.onchange = () => load(sel.value || null);
+
+  document.querySelectorAll('.filter-chip[data-part]').forEach(chip => {
+    chip.onclick = () => {
+      document.querySelectorAll('.filter-chip[data-part]').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      STATE.filterPart = chip.dataset.part;
+      renderWrongList();
+    };
+  });
+
+  const toggleBtn = document.getElementById('btn-toggle-zh');
+  toggleBtn.onclick = () => {
+    STATE.showTranslation = !STATE.showTranslation;
+    toggleBtn.textContent = STATE.showTranslation ? '中文翻译 ON' : '中文翻译 OFF';
+    toggleBtn.classList.toggle('active', STATE.showTranslation);
+    renderWrongList();
+  };
+}
+
+function renderWrongList() {
+  const container = document.getElementById('content');
+  let list = STATE.currentWrong;
+  if (STATE.filterPart !== 'all') {
+    list = list.filter(w => w.part == STATE.filterPart);
+  }
+
+  const total = STATE.currentWrong.length;
+  const byPart = { 1: 0, 2: 0, 3: 0 };
+  STATE.currentWrong.forEach(w => byPart[w.part] = (byPart[w.part] || 0) + 1);
+
+  if (total === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-kanji">◯</div>
+        <p style="font-family:'Shippori Mincho B1',serif;font-size:22px;color:var(--ink);margin-bottom:10px">全問正解!</p>
+        <p>この試験では間違えた問題はありません。</p>
+      </div>`;
+    return;
+  }
+
+  let html = `
+    <div class="stats-row">
+      <div class="stat-item"><span class="stat-num">${total}</span>間違い</div>
+      <div class="stat-item"><span class="stat-num">${byPart[1] || 0}</span>聴解</div>
+      <div class="stat-item"><span class="stat-num">${byPart[2] || 0}</span>聴読解</div>
+      <div class="stat-item"><span class="stat-num">${byPart[3] || 0}</span>読解</div>
+    </div>
+    <div class="wrong-list">
+  `;
+
+  if (list.length === 0) {
+    html += `<div class="empty-state"><p>この章では間違えた問題はありません</p></div>`;
+  } else {
+    list.forEach(w => html += renderCard(w));
+  }
+  html += '</div>';
+  container.innerHTML = html;
+
+  // Bind audio buttons
+  container.querySelectorAll('.wrong-audio-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = btn.dataset.text;
+      speakJP(text);
+    });
+  });
+}
+
+function renderCard(w) {
+  const userAns = w.user_answer;
+  const correct = w.correct_answer;
+  const options = [w.option_1, w.option_2, w.option_3, w.option_4];
+  const optKeys = ['option_1', 'option_2', 'option_3', 'option_4'];
+  const letters = ['①', '②', '③', '④'];
+  const showZh = STATE.showTranslation;
+
+  let html = `<div class="wrong-card">`;
+  html += `<div class="wrong-head">
+    <div><span class="wrong-type">${TYPE_LABELS[w.type] || w.type}</span>
+    <span style="margin-left:10px;font-size:12px;color:var(--ink-soft);letter-spacing:0.1em">${PART_NAMES[w.part]}</span></div>
+    <span class="wrong-id">#${String(w.question_id).padStart(3, '0')}</span>
+  </div>`;
+
+  if (w.image_id) {
+    const imgSrc = (window.BJT_DATA.images && window.BJT_DATA.images[w.image_id])
+      || ('images/' + w.image_id + '.jpg');
+    html += `<div class="wrong-image"><img src="${imgSrc}" alt="" onerror="this.style.display='none'"></div>`;
+  }
+
+  if (w.passage_text) {
+    const passageZh = tr(w.question_id, 'passage_text');
+    html += `<div class="wrong-passage">${escapeHtml(w.passage_text)}`;
+    if (showZh && passageZh) {
+      html += `<div class="wrong-zh">${escapeHtml(passageZh)}</div>`;
+    }
+    html += `</div>`;
+  }
+
+  if (w.chart_data) {
+    html += BJT_COMMON.renderChart(w.chart_data, { compact: true });
+  }
+
+  if (w.audio_script) {
+    const audioZh = tr(w.question_id, 'audio_script');
+    html += `<div class="wrong-audio">
+      <button class="wrong-audio-btn" data-text="${escapeAttr(w.audio_script)}">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <div class="wrong-audio-text">
+        <div class="script-head">AUDIO SCRIPT</div>
+        <div>${escapeHtml(w.audio_script)}</div>
+        ${showZh && audioZh ? `<div class="wrong-zh" style="opacity:0.7;margin-top:6px;border-top:1px dashed rgba(255,255,255,0.2);padding-top:6px">${escapeHtml(audioZh)}</div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  if (w.question_text) {
+    const qZh = tr(w.question_id, 'question_text');
+    html += `<div class="wrong-q">${escapeHtml(w.question_text)}`;
+    if (showZh && qZh) {
+      html += `<div class="wrong-zh" style="font-size:14px;font-weight:400;color:var(--ink-soft);margin-top:4px">${escapeHtml(qZh)}</div>`;
+    }
+    html += `</div>`;
+  }
+
+  html += `<div class="wrong-options">`;
+  options.forEach((opt, i) => {
+    const num = i + 1;
+    let cls = 'wrong-option';
+    let tag = '';
+    if (num === correct) { cls += ' correct'; tag = '<span class="wrong-tag correct">正解</span>'; }
+    if (num === userAns && num !== correct) { cls += ' user-wrong'; tag = '<span class="wrong-tag user-wrong">あなたの解答</span>'; }
+    const optZh = showZh ? tr(w.question_id, optKeys[i]) : '';
+    html += `<div class="${cls}"><span class="wrong-option-letter">${letters[i]}</span><div><span>${escapeHtml(opt)}${tag}</span>${optZh ? `<div class="wrong-zh" style="font-size:12px;color:var(--ink-soft);margin-top:2px">${escapeHtml(optZh)}</div>` : ''}</div></div>`;
+  });
+  if (userAns === 0) {
+    html += `<div style="font-size:12px;color:var(--vermilion);margin-top:4px;font-family:'Shippori Mincho B1',serif">※ 未回答</div>`;
+  }
+  html += `</div>`;
+
+  html += `<div class="wrong-explanation">
+    <div class="wrong-explanation-title">解説 / 解析</div>
+    ${escapeHtml(w.explanation_cn)}
+  </div>`;
+  html += `</div>`;
+  return html;
+}
+
+// Init
+const urlParams = new URLSearchParams(location.search);
+const resultIdParam = urlParams.get('result_id');
+load(resultIdParam);
+</script>
+
+</body>
+</html>

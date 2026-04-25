@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ja" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="robots" content="notranslate">
+<meta http-equiv="Content-Language" content="ja">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>受験中 ― BJT 模擬試験</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F1E8;
+    --paper-dark: #EBE4D2;
+    --ink: #1A1A2E;
+    --ink-soft: #3D3D52;
+    --vermilion: #C13B3B;
+    --vermilion-dark: #962929;
+    --slate: #2E4057;
+    --gold: #A08752;
+    --line: rgba(26, 26, 46, 0.12);
+    --green: #5a7c3f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.18 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+
+  /* ── Top bar ─────────────────────────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--paper);
+    border-bottom: 1px solid var(--ink);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .topbar-brand {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--vermilion);
+  }
+  .part-indicator {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+  }
+  .part-indicator strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .timer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    padding: 6px 14px;
+    background: var(--ink);
+    color: var(--paper);
+    letter-spacing: 0.05em;
+  }
+  .timer.warning { background: var(--gold); }
+  .timer.danger  { background: var(--vermilion); animation: pulse 1s infinite; }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50%     { opacity: 0.7; }
+  }
+  .btn-overview {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 13px;
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+  .btn-overview:hover { background: var(--ink); color: var(--paper); }
+  .btn-speed {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    padding: 6px 8px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    cursor: pointer;
+  }
+  .btn-mode {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 13px;
+    padding: 8px 14px;
+    border: 1px solid var(--vermilion);
+    background: var(--vermilion);
+    color: white;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-mode.study {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .btn-mode:hover { opacity: 0.85; }
+  .option-hidden-hint {
+    color: var(--ink-soft);
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+  .options-listening .option {
+    background: linear-gradient(90deg, white 0%, #f3eee2 100%);
+  }
+
+  /* ── Main ────────────────────────────────── */
+  .exam {
+    position: relative;
+    z-index: 1;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 28px 120px;
+  }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.15em;
+  }
+  .progress-bar {
+    height: 2px;
+    background: var(--paper-dark);
+    border-radius: 0;
+    overflow: hidden;
+    margin-bottom: 36px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--ink);
+    transition: width 0.4s ease;
+  }
+
+  /* ── Question block ──────────────────────── */
+  .q-type-label {
+    display: inline-block;
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--paper);
+    background: var(--vermilion);
+    padding: 4px 12px;
+    margin-bottom: 20px;
+  }
+  .q-number {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .q-text {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  /* Image */
+  .q-image-wrap {
+    text-align: center;
+    margin-bottom: 28px;
+    padding: 20px;
+    background: white;
+    border: 1px solid var(--line);
+  }
+  .q-image-wrap img {
+    max-width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+  }
+  .q-image-wrap .fallback {
+    padding: 60px 20px;
+    color: var(--ink-soft);
+    font-size: 14px;
+    font-family: 'Shippori Mincho B1', serif;
+  }
+
+  /* Passage */
+  .q-passage {
+    background: white;
+    border-left: 3px solid var(--vermilion);
+    padding: 22px 28px;
+    margin-bottom: 28px;
+    font-size: 15px;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    box-shadow: 2px 2px 0 var(--line);
+  }
+
+  /* Chart */
+  .q-chart {
+    background: white;
+    border: 1px solid var(--line);
+    padding: 20px;
+    margin-bottom: 28px;
+  }
+  .q-chart-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .bar-chart { display: flex; align-items: flex-end; gap: 12px; height: 180px; padding: 0 8px; }
+  .bar-chart .bar {
+    flex: 1;
+    background: linear-gradient(to top, var(--slate), #4a6584);
+    position: relative;
+    min-width: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .bar-chart .bar-label {
+    position: absolute;
+    bottom: -22px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .bar-chart .bar-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: white;
+    padding: 4px;
+  }
+  .chart-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .chart-table th, .chart-table td {
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    text-align: left;
+  }
+  .chart-table th {
+    background: var(--paper-dark);
+    font-weight: 600;
+  }
+
+  /* Audio */
+  .audio-panel {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--ink);
+    color: var(--paper);
+    margin-bottom: 28px;
+  }
+  .audio-play {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: var(--vermilion);
+    color: white;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .audio-play:hover { background: var(--vermilion-dark); }
+  .audio-play:disabled { opacity: 0.5; cursor: not-allowed; }
+  .audio-play svg { width: 20px; height: 20px; }
+  .audio-info {
+    flex: 1;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+  .audio-info small {
+    display: block;
+    opacity: 0.7;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  .audio-replay-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    background: white;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .option:hover { border-color: var(--ink); transform: translateX(2px); }
+  .option.selected {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .option-letter {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--vermilion);
+    flex-shrink: 0;
+    min-width: 22px;
+  }
+  .option.selected .option-letter { color: var(--paper); }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--paper);
+    border-top: 1px solid var(--ink);
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+  }
+  .nav-btn {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 14px;
+    padding: 12px 28px;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    cursor: pointer;
+    letter-spacing: 0.15em;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover:not(:disabled) { background: var(--ink); color: var(--paper); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .nav-btn.primary {
+    background: var(--vermilion);
+    color: white;
+    border-color: var(--vermilion);
+  }
+  .nav-btn.primary:hover { background: var(--vermilion-dark); border-color: var(--vermilion-dark); }
+
+  /* Overview modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 26, 46, 0.65);
+    z-index: 100;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--paper);
+    padding: 32px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .modal-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+  .overview-part {
+    margin-bottom: 24px;
+  }
+  .overview-part-title {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+  }
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+  }
+  .overview-cell {
+    aspect-ratio: 1;
+    background: var(--paper-dark);
+    border: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .overview-cell:hover { background: var(--ink); color: var(--paper); }
+  .overview-cell.answered { background: var(--green); color: white; border-color: var(--green); }
+  .overview-cell.current  { outline: 2px solid var(--vermilion); outline-offset: 2px; }
+  .modal-close {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 10px 24px;
+    cursor: pointer;
+    font-family: 'Shippori Mincho B1', serif;
+    letter-spacing: 0.1em;
+    margin-top: 12px;
+  }
+  .submit-warn {
+    background: #fff4e6;
+    border: 1px solid var(--gold);
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--slate);
+  }
+
+  /* Loading / Error */
+  .state-screen {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+    padding: 40px;
+  }
+  .state-screen h2 {
+    font-family: 'Shippori Mincho B1', serif;
+    font-size: 24px;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--line);
+    border-top-color: var(--vermilion);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 960px) {
+    .topbar { flex-wrap: wrap; }
+    .exam { max-width: 100%; }
+  }
+  @media (max-width: 640px) {
+    .topbar { padding: 10px 14px; gap: 8px; flex-wrap: wrap; }
+    .topbar-brand { font-size: 18px; }
+    .part-indicator { font-size: 12px; }
+    .timer { font-size: 18px; padding: 4px 10px; }
+    .btn-overview { font-size: 11px; padding: 6px 10px; }
+    .btn-speed { font-size: 11px; padding: 4px 6px; }
+    .exam { padding: 24px 16px 110px; }
+    .q-text { font-size: 18px; }
+    .option { font-size: 14px; padding: 14px 16px; }
+    .nav-bar { padding: 12px 16px; }
+    .nav-btn { padding: 10px 18px; font-size: 13px; }
+    .overview-grid { grid-template-columns: repeat(8, 1fr); }
+  }
+  @media (max-width: 400px) {
+    .topbar-brand { font-size: 16px; }
+    .timer { font-size: 16px; }
+    .q-text { font-size: 16px; }
+    .option { font-size: 13px; padding: 12px 14px; }
+    .overview-grid { grid-template-columns: repeat(5, 1fr); }
+    .nav-btn { padding: 8px 14px; font-size: 12px; }
+  }
+</style>
+<script src="questions-data.js"></script>
+<script src="bjt-local-api.js"></script>
+<script src="bjt-common.js"></script>
+</head>
+<body class="notranslate" translate="no">
+
+<!-- Loading -->
+<div id="loading" class="state-screen">
+  <div class="spinner"></div>
+  <h2>問題を読み込んでいます…</h2>
+</div>
+
+<!-- Error -->
+<div id="error" class="state-screen" style="display:none">
+  <h2 style="color:var(--vermilion)">読み込みエラー</h2>
+  <p id="error-msg"></p>
+  <a href="index.html" class="nav-btn">TOPへ戻る</a>
+</div>
+
+<!-- Main exam UI -->
+<div id="exam-ui" style="display:none">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">BJT</span>
+      <span class="part-indicator">第<strong id="topbar-part">一</strong>章 <strong id="topbar-part-name">聴解</strong></span>
+    </div>
+    <div class="timer" id="timer">45:00</div>
+    <select class="btn-speed" id="btn-speed" title="语速 / 再生速度">
+      <option value="slow">🐢 遅い</option>
+      <option value="normal" selected>🔊 普通</option>
+      <option value="fast">⚡ 速い</option>
+    </select>
+    <button class="btn-mode" id="btn-mode" title="切换考试模式/学习模式">
+      <span id="btn-mode-icon">🎧</span>
+      <span id="btn-mode-text">考試</span>
+    </button>
+    <button class="btn-overview" id="btn-overview">一覧 / Overview</button>
+    <a href="index.html" class="btn-overview" id="btn-home" onclick="return confirm('試験を中断してトップページに戻りますか？')">TOP →</a>
+  </div>
+
+  <main class="exam">
+    <div class="progress-row">
+      <span id="progress-text">問 1 / 80</span>
+      <span id="progress-section"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+    <div id="question-area"></div>
+
+    <div class="nav-bar">
+      <button class="nav-btn" id="btn-prev">← 前へ</button>
+      <span id="part-status" style="font-size:12px;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;"></span>
+      <button class="nav-btn primary" id="btn-next">次へ →</button>
+    </div>
+  </main>
+</div>
+
+<!-- Overview modal -->
+<div class="modal-overlay" id="overview-modal">
+  <div class="modal">
+    <div class="modal-title">問題一覧</div>
+    <div id="overview-content"></div>
+    <div id="submit-section" style="display:none">
+      <div class="submit-warn">
+        全ての章を終了しました。解答を提出すると結果が表示され、これ以上の修正はできません。
+      </div>
+      <button class="nav-btn primary" style="margin-top:12px;width:100%;padding:14px;font-size:15px;" onclick="submitExam()">最終提出 / SUBMIT</button>
+    </div>
+    <button class="modal-close" onclick="closeOverview()">閉じる</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// State
+// ============================================================
+const STATE = {
+  questions: { part1: [], part2: [], part3: [] },
+  flat: [],              // 扁平化的全部题目
+  currentIdx: 0,         // 在当前 part 内的索引
+  currentPart: 1,
+  answers: {},           // { qId: 1-4 }
+  partDurations: { 1: 45 * 60, 2: 30 * 60, 3: 30 * 60 },
+  partRemaining: { 1: 45 * 60, 2: 30 * 60, 3: 30 * 60 },
+  partSubmitted: { 1: false, 2: false, 3: false },
+  startTime: null,
+  totalStartTime: null,
+  timerHandle: null,
+  playCount: {},          // { qId: times played }
+  MAX_PLAYS: 2,           // 每题最多听2次(模拟真题)
+  examMode: 'exam',       // 'exam' 隐藏听力選項文字 | 'study' 全部显示
+};
+
+const PART_NAMES = BJT_COMMON.PART_NAMES;
+const PART_KANJI = BJT_COMMON.PART_KANJI;
+const TYPE_LABELS = BJT_COMMON.TYPE_LABELS;
+
+// ============================================================
+// Load questions
+// ============================================================
+function init() {
+  try {
+    const data = window.bjtApiQuestions();
+    STATE.questions = data.questions;
+    STATE.flat = [...data.questions.part1, ...data.questions.part2, ...data.questions.part3];
+
+    if (STATE.flat.length === 0) {
+      showError('題目データがありません。DBにINSERTが実行されたかご確認ください。');
+      return;
+    }
+
+    // Restore from sessionStorage if in progress
+    try {
+      const saved = sessionStorage.getItem('bjt_progress');
+      if (saved) {
+        const p = JSON.parse(saved);
+        if (p.answers) STATE.answers = p.answers;
+        if (p.partRemaining) STATE.partRemaining = p.partRemaining;
+        if (p.currentPart) STATE.currentPart = p.currentPart;
+        if (typeof p.currentIdx === 'number') STATE.currentIdx = p.currentIdx;
+        if (p.partSubmitted) STATE.partSubmitted = p.partSubmitted;
+      }
+    } catch {}
+
+    STATE.totalStartTime = Date.now();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('exam-ui').style.display = 'block';
+
+    // 从localStorage读取上次的模式偏好
+    try {
+      const savedMode = localStorage.getItem('bjt_exam_mode');
+      if (savedMode === 'study' || savedMode === 'exam') {
+        STATE.examMode = savedMode;
+      }
+    } catch {}
+    updateModeButton();
+
+    // 语速选择器
+    const speedSel = document.getElementById('btn-speed');
+    try {
+      const savedRate = localStorage.getItem('bjt_tts_rate');
+      if (savedRate) speedSel.value = savedRate;
+    } catch {}
+    speedSel.addEventListener('change', () => {
+      BJT_COMMON.setTtsRate(speedSel.value);
+    });
+
+    // Mode 切换按钮
+    document.getElementById('btn-mode').addEventListener('click', () => {
+      STATE.examMode = (STATE.examMode === 'exam') ? 'study' : 'exam';
+      try { localStorage.setItem('bjt_exam_mode', STATE.examMode); } catch {}
+      updateModeButton();
+      render();
+    });
+
+    startPartTimer();
+    render();
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', handleKey);
+
+    // Confirm before leaving
+    window.addEventListener('beforeunload', (e) => {
+      saveProgress();
+      e.preventDefault();
+      e.returnValue = '';
+    });
+
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
+function showError(msg) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('error').style.display = 'flex';
+  document.getElementById('error-msg').textContent = msg;
+}
+
+function updateModeButton() {
+  const btn = document.getElementById('btn-mode');
+  const icon = document.getElementById('btn-mode-icon');
+  const text = document.getElementById('btn-mode-text');
+  if (!btn) return;
+  if (STATE.examMode === 'exam') {
+    btn.classList.remove('study');
+    icon.textContent = '🎧';
+    text.textContent = '考試';
+    btn.title = '现在是考试模式 — 点击切换到学习模式(显示选项文字)';
+  } else {
+    btn.classList.add('study');
+    icon.textContent = '📖';
+    text.textContent = '学習';
+    btn.title = '现在是学习模式 — 点击切换回考试模式(隐藏听力选项文字)';
+  }
+}
+
+function saveProgress() {
+  try {
+    sessionStorage.setItem('bjt_progress', JSON.stringify({
+      answers: STATE.answers,
+      partRemaining: STATE.partRemaining,
+      currentPart: STATE.currentPart,
+      currentIdx: STATE.currentIdx,
+      partSubmitted: STATE.partSubmitted,
+    }));
+  } catch {}
+}
+
+// ============================================================
+// Timer
+// ============================================================
+function startPartTimer() {
+  if (STATE.timerHandle) clearInterval(STATE.timerHandle);
+  STATE.startTime = Date.now();
+  const initialRemaining = STATE.partRemaining[STATE.currentPart];
+
+  updateTimerDisplay(initialRemaining);
+
+  STATE.timerHandle = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - STATE.startTime) / 1000);
+    const rem = initialRemaining - elapsed;
+    STATE.partRemaining[STATE.currentPart] = rem;
+    updateTimerDisplay(rem);
+    if (rem <= 0) {
+      clearInterval(STATE.timerHandle);
+      autoAdvancePart();
+    }
+  }, 500);
+}
+
+function updateTimerDisplay(sec) {
+  sec = Math.max(0, sec);
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  const el = document.getElementById('timer');
+  el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  el.classList.toggle('warning', sec <= 300 && sec > 60);
+  el.classList.toggle('danger',  sec <= 60);
+}
+
+function autoAdvancePart() {
+  alert('第' + PART_KANJI[STATE.currentPart] + '章の時間が終了しました。次の章に進みます。');
+  STATE.partSubmitted[STATE.currentPart] = true;
+  advanceToNextPart();
+}
+
+function advanceToNextPart() {
+  stopAudio();
+  if (STATE.currentPart < 3) {
+    STATE.currentPart += 1;
+    STATE.currentIdx = 0;
+    startPartTimer();
+    render();
+  } else {
+    openOverview(true);
+  }
+}
+
+// ============================================================
+// Render
+// ============================================================
+function currentList() { return STATE.questions['part' + STATE.currentPart] || []; }
+function currentQuestion() { return currentList()[STATE.currentIdx]; }
+
+function render() {
+  const list = currentList();
+  const q = currentQuestion();
+  if (!q) return;
+
+  document.getElementById('topbar-part').textContent = PART_KANJI[STATE.currentPart];
+  document.getElementById('topbar-part-name').textContent = PART_NAMES[STATE.currentPart];
+
+  // Overall progress
+  let globalIdx = 0;
+  for (let p = 1; p < STATE.currentPart; p++) {
+    globalIdx += (STATE.questions['part' + p] || []).length;
+  }
+  globalIdx += STATE.currentIdx;
+  const total = STATE.flat.length;
+  document.getElementById('progress-text').textContent = '問 ' + (globalIdx + 1) + ' / ' + total;
+  document.getElementById('progress-section').textContent = TYPE_LABELS[q.type] || '';
+  document.getElementById('progress-fill').style.width = ((globalIdx + 1) / total * 100) + '%';
+
+  // Part status
+  const answered = list.filter(qq => STATE.answers[qq.id]).length;
+  document.getElementById('part-status').textContent =
+    '第' + PART_KANJI[STATE.currentPart] + '章 ' + answered + '/' + list.length + ' 回答済';
+
+  // Question area
+  const area = document.getElementById('question-area');
+  let html = '';
+
+  html += '<div class="q-type-label">' + (TYPE_LABELS[q.type] || q.type) + '</div>';
+  html += '<div class="q-number">第 ' + (STATE.currentIdx + 1) + ' 問</div>';
+
+  // Image (base64 inline, no external file needed)
+  if (q.image_id) {
+    const imgSrc = (window.BJT_DATA.images && window.BJT_DATA.images[q.image_id])
+      || ('images/' + q.image_id + '.jpg');
+    html += '<div class="q-image-wrap"><img src="' + imgSrc + '" alt="" onerror="this.parentNode.innerHTML=\'<div class=fallback>[' + q.image_id + ']</div>\'"></div>';
+  }
+
+  // Passage
+  if (q.passage_text) {
+    html += '<div class="q-passage">' + escapeHtml(q.passage_text) + '</div>';
+  }
+
+  // Chart
+  if (q.chart_data) {
+    html += renderChart(q.chart_data);
+  }
+
+  // Audio
+  if (q.audio_script) {
+    const played = STATE.playCount[q.id] || 0;
+    const remain = Math.max(0, STATE.MAX_PLAYS - played);
+    html += '<div class="audio-panel">' +
+      '<button class="audio-play" id="btn-audio"' + (remain === 0 ? ' disabled' : '') + '>' +
+      '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' +
+      '</button>' +
+      '<div class="audio-info">音声を再生<small>最多 ' + STATE.MAX_PLAYS + ' 回まで</small></div>' +
+      '<div class="audio-replay-count">残り ' + remain + ' 回</div>' +
+      '</div>';
+  }
+
+  // Question text
+  if (q.question_text) {
+    html += '<div class="q-text">' + escapeHtml(q.question_text) + '</div>';
+  }
+
+  // Options
+  // 真题中:Part1場面把握(bamen)和発言聴解(hatsugen)在屏幕上只显示①②③④,选项内容靠耳朵听
+  // 考试模式下隐藏这两类的选项文字,学习模式下全部显示
+  const hideOptionText = (STATE.examMode === 'exam') &&
+                         (q.type === 'bamen' || q.type === 'hatsugen');
+  html += '<div class="options' + (hideOptionText ? ' options-listening' : '') + '">';
+  ['option_1', 'option_2', 'option_3', 'option_4'].forEach((key, i) => {
+    const selected = STATE.answers[q.id] === (i + 1);
+    const optionText = hideOptionText
+      ? '<span class="option-hidden-hint">音声で確認 / 听音频判断</span>'
+      : '<span>' + escapeHtml(q[key]) + '</span>';
+    html += '<div class="option' + (selected ? ' selected' : '') +
+            '" data-idx="' + (i + 1) + '">' +
+            '<span class="option-letter">' + '①②③④'[i] + '</span>' +
+            optionText + '</div>';
+  });
+  html += '</div>';
+
+  area.innerHTML = html;
+
+  // Bind option clicks
+  area.querySelectorAll('.option').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = Number(el.dataset.idx);
+      STATE.answers[q.id] = idx;
+      saveProgress();
+      render();
+    });
+  });
+
+  // Bind audio
+  const audioBtn = document.getElementById('btn-audio');
+  if (audioBtn && !audioBtn.disabled) {
+    audioBtn.addEventListener('click', () => playAudio(q));
+    // 听力题自动播放(首次进入时)
+    if ((STATE.playCount[q.id] || 0) === 0 && STATE.currentPart <= 2) {
+      setTimeout(() => playAudio(q), 400);
+    }
+  }
+
+  // Nav buttons
+  const firstOfPart = STATE.currentIdx === 0;
+  const lastOfPart = STATE.currentIdx === list.length - 1;
+  const lastPart = STATE.currentPart === 3;
+
+  document.getElementById('btn-prev').disabled = firstOfPart;
+  document.getElementById('btn-next').textContent =
+    (lastOfPart && lastPart) ? '提出確認 →' :
+    (lastOfPart) ? '次の章へ →' : '次へ →';
+}
+
+const escapeHtml = BJT_COMMON.escapeHtml;
+
+const renderChart = BJT_COMMON.renderChart;
+
+// ============================================================
+// Audio via BJT_COMMON TTS
+// ============================================================
+function stopAudio() {
+  BJT_COMMON.stopAudio();
+}
+
+function playAudio(q) {
+  const text = q.audio_script;
+  if (!text) return;
+
+  BJT_COMMON.speakJP(text);
+
+  STATE.playCount[q.id] = (STATE.playCount[q.id] || 0) + 1;
+  // Update the counter (without full re-render to avoid interrupting)
+  const counter = document.querySelector('.audio-replay-count');
+  if (counter) {
+    const remain = Math.max(0, STATE.MAX_PLAYS - STATE.playCount[q.id]);
+    counter.textContent = '残り ' + remain + ' 回';
+    if (remain === 0) {
+      const btn = document.getElementById('btn-audio');
+      if (btn) btn.disabled = true;
+    }
+  }
+}
+
+// ============================================================
+// Navigation
+// ============================================================
+document.getElementById('btn-prev').addEventListener('click', () => {
+  stopAudio();
+  if (STATE.currentIdx > 0) {
+    STATE.currentIdx -= 1;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  stopAudio();
+  const list = currentList();
+  const lastOfPart = STATE.currentIdx === list.length - 1;
+  const lastPart = STATE.currentPart === 3;
+
+  if (lastOfPart && lastPart) {
+    openOverview(true);
+    return;
+  }
+  if (lastOfPart) {
+    if (!confirm('第' + PART_KANJI[STATE.currentPart] + '章を終了し、次の章へ進みます。よろしいですか？（前の章には戻れません）')) return;
+    STATE.partSubmitted[STATE.currentPart] = true;
+    advanceToNextPart();
+    return;
+  }
+  STATE.currentIdx += 1;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+function handleKey(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowLeft') document.getElementById('btn-prev').click();
+  else if (e.key === 'ArrowRight') document.getElementById('btn-next').click();
+  else if (['1','2','3','4'].includes(e.key)) {
+    const opt = document.querySelector('.option[data-idx="' + e.key + '"]');
+    if (opt) opt.click();
+  }
+}
+
+// ============================================================
+// Overview modal
+// ============================================================
+document.getElementById('btn-overview').addEventListener('click', () => openOverview(false));
+
+function openOverview(canSubmit) {
+  const modal = document.getElementById('overview-modal');
+  const content = document.getElementById('overview-content');
+  const submitSec = document.getElementById('submit-section');
+
+  let html = '';
+  [1, 2, 3].forEach(p => {
+    const list = STATE.questions['part' + p] || [];
+    html += '<div class="overview-part">';
+    html += '<div class="overview-part-title">第' + PART_KANJI[p] + '章 · ' + PART_NAMES[p] +
+            ' (' + list.filter(q => STATE.answers[q.id]).length + '/' + list.length + ')</div>';
+    html += '<div class="overview-grid">';
+    list.forEach((q, i) => {
+      const answered = STATE.answers[q.id];
+      const current = (p === STATE.currentPart && i === STATE.currentIdx);
+      const disabled = STATE.partSubmitted[p] || p !== STATE.currentPart;
+      html += '<div class="overview-cell' +
+              (answered ? ' answered' : '') +
+              (current ? ' current' : '') + '"' +
+              (disabled ? ' style="opacity:0.5;cursor:not-allowed"' : '') +
+              ' data-part="' + p + '" data-idx="' + i + '">' +
+              (i + 1) + '</div>';
+    });
+    html += '</div></div>';
+  });
+  content.innerHTML = html;
+
+  // Jump click
+  content.querySelectorAll('.overview-cell').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = Number(el.dataset.part);
+      const i = Number(el.dataset.idx);
+      if (STATE.partSubmitted[p]) return;
+      if (p !== STATE.currentPart) return;
+      STATE.currentIdx = i;
+      closeOverview();
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  submitSec.style.display = canSubmit ? 'block' : 'none';
+  modal.classList.add('active');
+}
+
+function closeOverview() {
+  document.getElementById('overview-modal').classList.remove('active');
+}
+
+// ============================================================
+// Submit
+// ============================================================
+function submitExam() {
+  stopAudio();
+  if (STATE.timerHandle) clearInterval(STATE.timerHandle);
+  window.removeEventListener('beforeunload', () => {});
+
+  const duration = Math.floor((Date.now() - STATE.totalStartTime) / 1000);
+
+  try {
+    const result = window.bjtApiSubmit({ answers: STATE.answers, duration_seconds: duration });
+    try { sessionStorage.removeItem('bjt_progress'); } catch {}
+    sessionStorage.setItem('bjt_last_result', JSON.stringify(result));
+    window.location.href = 'result.html?id=' + result.result_id;
+  } catch (err) {
+    alert('提出失敗：' + err.message + '\n再試行してください。');
+  }
+}
+
+// Swipe gesture for mobile
+(function() {
+  let startX = 0, startY = 0;
+  document.addEventListener('touchstart', e => {
+    startX = e.changedTouches[0].screenX;
+    startY = e.changedTouches[0].screenY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].screenX - startX;
+    const dy = e.changedTouches[0].screenY - startY;
+    if (Math.abs(dx) < 80 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+    if (dx > 0) document.getElementById('btn-prev').click();
+    else document.getElementById('btn-next').click();
+  }, { passive: true });
+})();
+
+init();
+</script>
+
+</body>
+</html>
